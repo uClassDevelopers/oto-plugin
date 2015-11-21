@@ -1,0 +1,77 @@
+/*
+Copyright 2015 uClass Developers Daniel Holm & Adam Jacobs Feldstein
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+hr {
+    clear: both; 
+    border: 1px solid #A0A0A0; 
+    margin-top: 1.5%;
+    margin: 1%;
+}
+#made_by_uclass {
+   float: right; 
+    margin: 1%; color: 
+    #A0A0A0; 
+    text-decoration: none; 
+    font-weight: bold; 
+}
+#made_by_uclass img {
+    vertical-align: middle; 
+    height: 50px;
+}
+#form-wrapper {
+   
+    padding: 1%;
+    clear: both;
+}
+#top_images {
+    width: 95%; 
+    background: #FDFDFD none repeat scroll 0% 0%; 
+    box-shadow: 0px 1px 0px 0px #ADADAD; 
+    padding: 1%; 
+    display: block; 
+    text-align: left;
+}
+.box-row {
+    width:25%; 
+    margin: 1.5%; 
+    padding: 0.5%; 
+    background: #FDFDFD none repeat scroll 0% 0%; 
+    box-shadow: 0px 1px 0px 0px #ADADAD; 
+    display: inline-block; 
+}
+.txt-al-floated-left {
+    margin-left: 25px;
+    text-align: left;
+    float: left;
+}
+.del-wth-chbx {
+    float: right; 
+    font-size: 18px; 
+    color: red;
+}
+.border-btm {
+    margin-bottom: 20px; 
+    border-bottom: 1px solid #A0A0A0; 
+    padding: 15px;
+}
+.success {
+    padding: 5px;
+    padding-left: 10px;
+    border-left: 5px solid green;
+
+}
+.success .tgl-alert {
+    float: right;
+}
