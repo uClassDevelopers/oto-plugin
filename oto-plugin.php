@@ -4,7 +4,7 @@ Plugin Name: OTO plugin
 Description: OTO plugin
 Version:     0.1
 Author:      Daniel Holm, Adam Jacobs Feldstein
-Author URI:  http://URI_Of_The_Plugin_Author
+Author URI:  http://uclass.se
 License:     Apache License Version 2.0
 License URI: http://www.apache.org/licenses/
 */
