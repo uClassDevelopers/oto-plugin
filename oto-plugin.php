@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: OTO Main plugin
-Description: OTO Main plugin
+Plugin Name: OTO plugin
+Description: OTO plugin
 Version:     0.1
 Author:      Daniel Holm, Adam Jacobs Feldstein
 Author URI:  http://URI_Of_The_Plugin_Author
