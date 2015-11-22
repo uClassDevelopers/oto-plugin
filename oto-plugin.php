@@ -5,8 +5,8 @@ Description: OTO plugin
 Version:     0.1
 Author:      Daniel Holm, Adam Jacobs Feldstein
 Author URI:  http://URI_Of_The_Plugin_Author
-License:     GPL2
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+License:     Apache License Version 2.0
+License URI: http://www.apache.org/licenses/
 */
 
 //Setup eter_start table in wpdb
