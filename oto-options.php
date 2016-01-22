@@ -15,9 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', true);
+@ini_set('display_errors', 0);
+
 //Set connection to wpdb and needed variables
 global $wpdb;
-$table_name = $wpdb->prefix . 'eter_start';
+$table_name = $wpdb->prefix . 'oto_start';
 
 //Insert updated content in to database
 if(!empty($_POST)) {
