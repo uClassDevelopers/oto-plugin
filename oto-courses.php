@@ -57,11 +57,11 @@ if(!empty($_POST)) {
 }
 ?>
 <!-- GET daneden animate.css --> 
-<link href="<? bloginfo('stylesheet_directory');?>/animate.min.css" rel="stylesheet"/>
+<link href="<?php bloginfo('stylesheet_directory');?>/animate.min.css" rel="stylesheet"/>
 <!-- uClass framework main css for eter-options.php -->
-<link href="<? bloginfo('stylesheet_directory');?>/uclass-framework.css" rel="stylesheet"/>
+<link href="<?php bloginfo('stylesheet_directory');?>/uclass-framework.css" rel="stylesheet"/>
 <!-- Import local version of jQuery -->
-<script type="text/javascript" src="<? bloginfo('stylesheet_directory');?>/jquery.min.js"></script>
+<script type="text/javascript" src="<?php bloginfo('stylesheet_directory');?>/jquery.min.js"></script>
 <!-- ETER-options.php jQuery scripts --> 
 <script type="text/javascript">
     function get_courses(){
@@ -103,7 +103,7 @@ if(!empty($_POST)) {
 <form action=""  method="post" id="ETERStartForm">
     <div id="form-wrapper">
         <a class="animated zoomInDown" id="made_by_uclass" href="http://uclass.se/">
-            Made by uClassDevs<img src="<? bloginfo('stylesheet_directory');?>/uclass_logo.png" alt="uClass Logo"/>
+            Made by uClassDevs<img src="<?php bloginfo('stylesheet_directory');?>/uclass_logo.png" alt="uClass Logo"/>
         </a>
         <h1>OTO Application Options</h1>
         <h1>| Kurser</h1>
@@ -151,7 +151,7 @@ if(!empty($_POST)) {
                             <input type="hidden" name="ti_row[]" value="3">
                         </div>
                     </div>
-                    <? endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
                 <p><a class="button" href="#" id="add_field">Lägg till en Slide</a></p>
             </div>

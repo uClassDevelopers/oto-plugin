@@ -102,11 +102,11 @@ if(!empty($_POST)) {
 }
 ?>
 <!-- GET daneden animate.css --> 
-<link href="<? bloginfo('stylesheet_directory');?>/animate.min.css" rel="stylesheet"/>
+<link href="<?php bloginfo('stylesheet_directory');?>/animate.min.css" rel="stylesheet"/>
 <!-- uClass framework main css for eter-options.php -->
-<link href="<? bloginfo('stylesheet_directory');?>/uclass-framework.css" rel="stylesheet"/>
+<link href="<?php bloginfo('stylesheet_directory');?>/uclass-framework.css" rel="stylesheet"/>
 <!-- Import local version of jQuery -->
-<script type="text/javascript" src="<? bloginfo('stylesheet_directory');?>/jquery.min.js"></script>
+<script type="text/javascript" src="<?php bloginfo('stylesheet_directory');?>/jquery.min.js"></script>
 <!-- ETER-options.php jQuery scripts --> 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -157,7 +157,7 @@ if(!empty($_POST)) {
 <form action=""  method="post" id="ETERStartForm">
     <div id="form-wrapper">
         <a class="animated zoomInDown" id="made_by_uclass" href="http://uclass.se/">
-            Made by uClassDevs<img src="<? bloginfo('stylesheet_directory');?>/uclass_logo.png" alt="uClass Logo"/>
+            Made by uClassDevs<img src="<?php bloginfo('stylesheet_directory');?>/uclass_logo.png" alt="uClass Logo"/>
         </a>
         <h1>OTO Application Options</h1>
         <h1>| Startsida</h1>
@@ -199,7 +199,7 @@ if(!empty($_POST)) {
                             <hr/>
                         </div>
                     </div>
-                    <? endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
                 <p><a class="button" href="#" id="add_field">Lägg till en bild</a></p>
             </div>
@@ -207,13 +207,13 @@ if(!empty($_POST)) {
         <h2>Välj innehåll Rad 1</h2>
        <?php if($wpdb->get_results("SELECT id FROM `".$table_name."` WHERE row = 1 AND is_dyn=1 ;")): ?>
         <input type="checkbox" name="is_dyn_fr" id="is_dyn_fr_off"  checked value="1"> Kryssa ur denna för att avaktivera Dynamiskt innehåll
-        <? foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 1 LIMIT 1;") as $key => $rows):
+        <?php foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 1 LIMIT 1;") as $key => $rows):
            $dyn_link = $rows->dyn_link;
         ?>
           <input type="text" name="dyn_link_fr" value="<?php echo $dyn_link; ?>">  
-        <? endforeach; ?>
-        <? foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 1 ;") as $key => $rows):
-            // each column will be accessible by these
+        <?php endforeach; ?>
+        <?php foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 1 ;") as $key => $rows):
+        
             $row= $rows->row;
             $position = $rows->position;
             $title = $rows->title;
@@ -233,8 +233,8 @@ if(!empty($_POST)) {
                 <input type="hidden" name="fr_row[]" value="<?php echo $row; ?>" />
                 <input type="hidden" name="id[]" value="<?php echo $id; ?>" />
             </div>
-            <? endforeach; ?>
-        <? else: ?>
+            <?php endforeach; ?>
+        <?php else: ?>
         <input type="checkbox" name="is_dyn_fr" id="is_dyn_fr" value="1"> Kryssa i denna för Dynamiskt innehåll
         <div style="text-align: center;" id="f_row">
             <div id="fr_wrapper">
@@ -261,19 +261,19 @@ if(!empty($_POST)) {
                 <input type="hidden" name="fr_row[]" value="<?php echo $row; ?>" />
                 <input type="hidden" name="id[]" value="<?php echo $id; ?>" />
             </div>
-            <? endforeach; ?>
+            <?php endforeach; ?>
             </div>
         </div>
         <?php endif; ?>    
         <h2>Välj innehåll Rad 2</h2>
         <?php if($wpdb->get_results("SELECT id FROM `".$table_name."` WHERE row = 2 AND is_dyn=1 ;")): ?>
         <input type="checkbox" name="is_dyn_sr" id="is_dyn_sr_off" checked value="1"> Kryssa ur denna för att avaktivera Dynamiskt innehåll. Notera att du måste trycka på spara för innan du kan lägga till staiskt innehåll i boxarna. 
-        <? foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 2 LIMIT 1;") as $key => $rows):
+        <?php foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 2 LIMIT 1;") as $key => $rows):
            $dyn_link = $rows->dyn_link;
         ?>
           <input type="text" name="dyn_link_sr" value="<?php echo $dyn_link; ?>">  
-        <? endforeach; ?>
-        <? foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 2 ;") as $key => $rows):
+        <?php endforeach; ?>
+        <?php foreach( $wpdb->get_results("SELECT * FROM `".$table_name."` WHERE row = 2 ;") as $key => $rows):
             // each column will be accessible by these
             $row= $rows->row;
             $position = $rows->position;
@@ -293,8 +293,8 @@ if(!empty($_POST)) {
                 <input type="hidden" name="sr_row[]" value="<?php echo $row; ?>" />
                 <input type="hidden" name="id[]" value="<?php echo $id; ?>" />
             </div>
-            <? endforeach; ?>
-        <? else: ?>
+            <?php endforeach; ?>
+        <?php else: ?>
         <input type="checkbox" name="is_dyn_sr" id="is_dyn_sr" value="1"> Kryssa i denna för Dynamiskt innehåll
                 <div style="text-align: center;" id="s_row">
             <div id="sr_wrapper">
@@ -320,7 +320,7 @@ if(!empty($_POST)) {
                 <input type="hidden" name="sr_row[]" value="<?php echo $row; ?>" />
                 <input type="hidden" name="id[]" value="<?php echo $id; ?>" />
             </div>
-            <? endforeach; ?>
+            <?php endforeach; ?>
             </div>
         </div>
         <?php endif; ?>  

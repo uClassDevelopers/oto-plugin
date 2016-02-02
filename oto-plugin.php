@@ -9,15 +9,17 @@ License:     Apache License Version 2.0
 License URI: http://www.apache.org/licenses/
 */
 
-//Setup eter_start table in wpdb
-global $eter_start_db_version;
-$eter_start_db_version = '1.0'; //Set version of table
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+define('WP_DEBUG_DISPLAY', true);
+@ini_set('display_errors', 1);
 
 //Create the table and colums, also set correct formats on the columns
 function oto_setup_db() {
   global $wpdb;
   global $oto_db_version;
-
+  $oto_db_version = '1.0';
+  
   $start_table_name = $wpdb->prefix . 'oto_start';
   $course_slider_table_name = $wpdb->prefix . 'oto_courses_slider';
   $charset_collate = $wpdb->get_charset_collate();
@@ -285,6 +287,4 @@ function eterLicences() {
   echo '</div>';
 
 }
-//Remove comment when development/ testing
-//$wpdb->show_errors(); 
 ?>
