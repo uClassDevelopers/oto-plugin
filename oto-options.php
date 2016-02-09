@@ -140,7 +140,6 @@ if(!empty($_POST)) {
 
         $(function(){
             $("#is_dyn_sr").change(function() {
-                alert("blaj");
                 if(this.checked) {
                     $("#sr_wrapper").toggle();
                     $("#s_row").append('<span id="dyntextsr">Välj dynamsikt innehåll:</span><select name="dyn_link_sr" id="dyn_link_sr"><option value="http://eter.rudbeck.info/?json=get_recent_posts&apikey=ErtYnDsKATCzmuf6&count=3">Senaste guider</option><option value="http://eter.rudbeck.info/eter-app-api/?apikey=vV85LEH2cUJjshrFx5&list-all-courses=1&parent=43">Senaste kurser</option></select>');
