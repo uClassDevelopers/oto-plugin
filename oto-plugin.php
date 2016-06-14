@@ -531,6 +531,18 @@ function oto_mce_before_init_insert_formats( $init_array ) {
 // Attach callback to 'tiny_mce_before_init'
 add_filter( 'tiny_mce_before_init', 'oto_mce_before_init_insert_formats' );
 
+//Include a sigle-post template for guides to simplify for administrators
+/*add_filter('single_template', 'oto_guide_template');
+function oto_guide_template($single) {
+  global $wp_query, $post;
+
+  if ($post->post_type == "guide"){
+    if(file_exists(PLUGIN_PATH . '/single-guide.php'))
+    return PLUGIN_PATH . '/single-guide.php';
+  }
+  return $single;
+}*/
+
 // Sidebar Menu configuration
 add_action('admin_menu', 'addEterMenu');
 function addEterMenu() {
