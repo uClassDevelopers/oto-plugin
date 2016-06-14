@@ -13,19 +13,27 @@ function jquery_init(){
 }
 add_filter('wp_enqueue_scripts', 'jquery_init');
 
-// load css into the admin pages
-function mytheme_enqueue_options_style() {
-    wp_enqueue_style( 'mytheme-options-style', get_template_directory_uri() . '/animate.min.css' ); 
-}
-add_action( 'admin_enqueue_scripts', 'mytheme_enqueue_options_style' );
- 
+require_once('/inc/js-wp-editor.php');
 
+function oto_scripts_n_styles() {
+  // Trying to register wp-editor script
+  wp_register_script( 'wpeditor-script', plugins_url( '/js/js-wp-editor.min.js', __FILE__ ) );
+
+  //load the wp editor script
+  js_wp_editor();
+
+  wp_enqueue_script( 'wpeditor-script' );
+}
+
+add_action( 'wp_enqueue_scripts', 'oto_scripts_n_styles' );
+
+//For development
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);
 define('WP_DEBUG_DISPLAY', true);
 @ini_set('display_errors', 1);
 
-//Create the table and colums, also set correct formats on the columns
+//Create the oto table and columns, also set correct formats
 function oto_setup_db() {
   global $wpdb;
   global $oto_db_version;
@@ -60,7 +68,7 @@ function oto_setup_db() {
     content text NULL,
     UNIQUE KEY id (id)
   ) $charset_collate;
-   CREATE TABLE $lang_elements (
+  CREATE TABLE $lang_elements (
     id int(11) NOT NULL AUTO_INCREMENT,
     page text NOT NULL,
     swe text NULL,
@@ -88,6 +96,7 @@ function oto_setup_db() {
 
   $table_name = $wpdb->prefix . 'oto_start';
 
+  //Insert test data
   for($i=0; $i< 6; $i++) {
     if($i < 3) { $row=1;} else{ $row = 2;}
     $placeholder_row = $row;
@@ -101,12 +110,12 @@ function oto_setup_db() {
     $placeholder_on_link_to_post = '';
     $placeholder_on_link_outbound = '';
 
-    $wpdb->insert( $table_name, array( 'row' => $placeholder_row, 'position' =>  $placeholder_position, 
-                                      'title' =>  $placeholder_title, 'on_link' =>  $placeholder_on_link, 
-                                      'image_url' =>  $placeholder_image_url, 'content' =>  $placeholder_content, 
-                                      'is_dyn' =>  $placeholder_is_dyn , 'dyn_link' =>  $placeholder_dyn_link, 
-                                      'on_link_to_post' =>  $on_link_to_post, 'on_link_outbound' =>  $placeholder_on_link_outbound), 
-                  array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ));  
+    $wpdb->insert( $table_name, array( 'row' => $placeholder_row, 'position' =>  $placeholder_position,
+    'title' =>  $placeholder_title, 'on_link' =>  $placeholder_on_link,
+    'image_url' =>  $placeholder_image_url, 'content' =>  $placeholder_content,
+    'is_dyn' =>  $placeholder_is_dyn , 'dyn_link' =>  $placeholder_dyn_link,
+    'on_link_to_post' =>  $on_link_to_post, 'on_link_outbound' =>  $placeholder_on_link_outbound),
+    array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ));
 
   }
 
@@ -123,16 +132,16 @@ wp_enqueue_style( 'uclass_framework');
 function eter_add_dashboard_widgets() {
 
   wp_add_dashboard_widget(
-    'eter_dashboard_widget',         // Widget slug.
-    'OTO',         // Title.
-    'eter_dashboard_widget_function' // Display function.
-  );  
+  'eter_dashboard_widget',         // Widget slug.
+  'OTO',         // Title.
+  'eter_dashboard_widget_function' // Display function.
+);
 }
 add_action( 'wp_dashboard_setup', 'eter_add_dashboard_widgets' );
 function eter_dashboard_widget_function() {
 
   // Display whatever you want to tell.
-  echo"<p><a href=''>Gå til OTO-appens inställningar</a></p>";
+  echo"<p>Gå til OTO-appens inställningar</p>";
   echo "<p>Det går att dölja innehåll från appen eller webbsidan. Detta görs genom att byta innehållsredigerarens läge från visuell till text, och sedan innefatta innehållen för repsektive plattform inom en lämplig utav dessa: </p><code>&lt;div class='app'&gt; Innehåll &lt/div&gt;  &lt;div class='webb'&gt; Innehåll &lt/div&gt; </code>. <p>'app' visas bara i appen och 'webb' visas bara på webben.</p>";
 }
 
@@ -140,10 +149,10 @@ function eter_dashboard_widget_function() {
 add_filter( 'manage_edit-post_columns', 'add_new_columns');
 
 /**
- * Add new columns to the post table
- *
- * @param Array $columns - Current columns on the list post
- */
+* Add new columns to the post table
+*
+* @param Array $columns - Current columns on the list post
+*/
 
 function add_new_columns( $columns ) {
   $column_meta = array( 'meta' => 'Om guide i kurs, position' );
@@ -155,21 +164,21 @@ function add_new_columns( $columns ) {
 add_action( 'manage_posts_custom_column' , 'custom_columns' );
 
 /**
- * Display data in new columns
- *
- * @param  $column Current column
- *
- * @return Data for the column
- */
+* Display data in new columns
+*
+* @param  $column Current column
+*
+* @return Data for the column
+*/
 function custom_columns( $column ) {
   global $post;
 
   switch ( $column ) {
     case 'meta':
-      $metaData = get_post_meta( $post->ID, 'eter_guide_position', true );
+    $metaData = get_post_meta( $post->ID, 'eter_guide_position', true );
 
-      echo $metaData;
-      break;
+    echo $metaData;
+    break;
   }
 }
 
@@ -186,12 +195,12 @@ function cd_meta_box_cb( $post )
   $values = get_post_custom( $post->ID );
   $text = isset( $values['eter_guide_position'] ) ? esc_attr( $values['eter_guide_position'][0] ) : '';
   wp_nonce_field( 'my_meta_box_nonce', 'meta_box_nonce' );
-?>
-<p>
-  <label for="eter_guide_position">Position</label>
-  <input type="text" name="eter_guide_position" id="eter_guide-position" value="<?php echo $text; ?>" />
-</p>
-<?php  
+  ?>
+  <p>
+    <label for="eter_guide_position">Position</label>
+    <input type="text" name="eter_guide_position" id="eter_guide-position" value="<?php echo $text; ?>" />
+  </p>
+  <?php
 }
 
 
@@ -208,7 +217,7 @@ function cd_meta_box_save( $post_id )
   if( !current_user_can( 'edit_post' ) ) return;
 
   // now we can actually save the data
-  $allowed = array( 
+  $allowed = array(
     'a' => array( // on allow a tags
       'href' => array() // and those anchords can only have href attribute
     )
@@ -216,7 +225,7 @@ function cd_meta_box_save( $post_id )
 
   // Probably a good idea to make sure your data is set
   if( isset( $_POST['eter_guide_position'] ) )
-    update_post_meta( $post_id, 'eter_guide_position', wp_kses( $_POST['eter_guide_position'], $allowed ) );
+  update_post_meta( $post_id, 'eter_guide_position', wp_kses( $_POST['eter_guide_position'], $allowed ) );
 }
 
 // Add to our admin_init function
@@ -224,23 +233,303 @@ add_action('quick_edit_custom_box',  'eter_add_quick_edit', 10, 2);
 
 function eter_add_quick_edit($column_name, $post_type) {
   if ($column_name != 'meta') return;
-?>
-<fieldset class="inline-edit-col-left">
-  <div class="inline-edit-col">
-    <span class="title">Widget Set</span>
-    <input type="hidden" name="eter_widget_set_noncename" id="eter_widget_set_noncename" value="" />
-    <option class='widget-option' value='0'>None</option>
-    <?php // Get all widget sets
-  $metaData = get_post_meta( $post->ID, 'eter_guide_position', true );
-    ?>
-    <label for="eter_guide_position_input">Position</label>
-    <input type="text" name="eter_guide_position_input" id="eter_guide_position_input" value="<?php echo $metaData; ?>">
+  ?>
+  <fieldset class="inline-edit-col-left">
+    <div class="inline-edit-col">
+      <span class="title">Widget Set</span>
+      <input type="hidden" name="eter_widget_set_noncename" id="eter_widget_set_noncename" value="" />
+      <option class='widget-option' value='0'>None</option>
+      <?php // Get all widget sets
+      $metaData = get_post_meta( $post->ID, 'eter_guide_position', true );
+      ?>
+      <label for="eter_guide_position_input">Position</label>
+      <input type="text" name="eter_guide_position_input" id="eter_guide_position_input" value="<?php echo $metaData; ?>">
 
-  </div>
-</fieldset>
-<?php
+    </div>
+  </fieldset>
+  <?php
 }
 
+//Create and configure the custom post type "Guide"
+function Guide_create_post_type() {
+  $labels = array(
+    'name' => 'Guide',
+    'singular_name' => 'Guide',
+    'add_new' => 'Add Guide',
+    'all_items' => 'All Guides',
+    'add_new_item' => 'Add Guide',
+    'edit_item' => 'Edit Guide',
+    'new_item' => 'New Guide',
+    'view_item' => 'View Guide',
+    'search_items' => 'Search Guides',
+    'not_found' => 'No Guides found',
+    'not_found_in_trash' => 'No Guides found in trash',
+    'parent_item_colon' => 'Parent Guide'
+    //'menu_name' => default to 'name'
+  );
+  $args = array(
+    'labels' => $labels,
+    'public' => true,
+    'has_archive' => true,
+    'publicly_queryable' => true,
+    'query_var' => true,
+    'rewrite' => true,
+    'capability_type' => 'post',
+    'hierarchical' => false,
+    'supports' => array(
+      'title',
+      'thumbnail',
+      //'author',
+      //'trackbacks',
+      'custom-fields',
+      //'comments',
+      'revisions',
+      //'page-attributes', // (menu order, hierarchical must be true to show Parent option)
+      //'post-formats',
+    ),
+    'taxonomies' => array( 'category', 'post_tag' ), // add default post categories and tags
+    'menu_position' => 5,
+    'exclude_from_search' => false,
+    'register_meta_box_cb' => 'Guide_add_post_type_metabox'
+  );
+  register_post_type( 'Guide', $args );
+  //flush_rewrite_rules();
+
+  register_taxonomy( 'Guide_category', // register custom taxonomy - category
+  'Guide',
+  array(
+    'hierarchical' => true,
+    'labels' => array(
+      'name' => 'Guide category',
+      'singular_name' => 'Guide category',
+    )
+  )
+);
+register_taxonomy( 'Guide_tag', // register custom taxonomy - tag
+'Guide',
+array(
+  'hierarchical' => false,
+  'labels' => array(
+    'name' => 'Guide tag',
+    'singular_name' => 'Guide tag',
+  )
+)
+);
+}
+add_action( 'init', 'Guide_create_post_type' );
+
+
+function Guide_add_post_type_metabox() { // add the meta box
+  add_meta_box( 'Guide_metabox', 'Guide Content', 'Guide_metabox', 'Guide', 'normal' );
+}
+
+
+function Guide_metabox() {
+  global $post;
+  // Noncename needed to verify where the data originated
+  echo '<input type="hidden" name="Guide_post_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
+
+  // Get the data if its already been entered
+  $Guide_post_name = get_post_meta($post->ID, '_Guide_post_name', true);
+  $Guide_post_desc = get_post_meta($post->ID, '_Guide_post_desc', true);
+  ?>
+  <script type="text/javascript">
+  jQuery.noConflict();
+  jQuery(document).ready(function($){
+    var max_fields      = 10; //maximum input boxes allowed
+    var wrapper         = $("#guideEditArea"); //Fields wrapper
+    var add_button      = $(".add_field_button"); //Add button ID
+
+    var i = 1; //initlal text box count
+    $(add_button).click(function(e){ //on add input button click
+      e.preventDefault();
+      if(i < max_fields){ //max input box allowed
+        i++; //text box increment
+        $(wrapper).append('<tr><th><label>Steg '+i+'</label></th><td><textarea name="Guide_post_steps[]"></textarea></td><a href="#" class="remove_field">Remove</a></tr>'); //add input box
+
+        jQuery('#aa').wp_editor(); // add wp editor to textbox
+      }
+    });
+
+    $(wrapper).on("click",".remove_field", function(e){
+      e.preventDefault(); $(this).parent('div').remove(); i--;
+    })
+  });
+  </script>
+  <table class="form-table" id="guideEditArea">
+    <tr>
+      <th>
+        <label>Inledning</label>
+      </th>
+      <td>
+        <?php
+        $content = $Guide_post_desc;
+        $editor_id = 'Guide_post_desc';
+        wp_editor( $content, $editor_id );
+        ?>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <label><h2>STEG FÖR STEG</h2> <button class="add_field_button">Lägg till ett steg</button></label>
+      </th>
+    </tr>
+    <?php
+    $meta = get_post_meta($post->ID);
+    //print_r($meta);
+
+    $string = '_Guide_post_steps_';
+    $count = 0;
+    foreach ($meta as $key => $data) {
+      //print_r($data);
+      //print_r($key);
+
+      //Settings for wp editor
+      $settings = array(
+        'textarea_name' => 'Guide_post_steps[]',
+      );
+
+      //Check to se if any of the keys contains _Guide_post_steps_, if not 0 display the content
+      if (substr_count($key, $string) !== 0) {
+        $count++;
+        echo "
+        <tr>
+        <th>
+        <label>Steg ".$count."</label>
+        </th>
+        <td>
+        ";
+        $content =  $data[0];
+        $editor_id = $key;
+        wp_editor( $content, $editor_id, $settings);
+
+        echo "
+        </td>
+        </tr>
+
+        ";
+      }
+    }
+    ?>
+  </table>
+  <?php
+}
+
+function Guide_post_save_meta( $post_id, $post ) { // save the data
+
+  /*
+  * We need to verify this came from our screen and with proper authorization,
+  * because the save_post action can be triggered at other times.
+  */
+  if ( ! isset( $_POST['Guide_post_noncename'] ) ) { // Check if our nonce is set.
+    return;
+  }
+
+  // verify this came from the our screen and with proper authorization,
+  // because save_post can be triggered at other times
+  if( !wp_verify_nonce( $_POST['Guide_post_noncename'], plugin_basename(__FILE__) ) ) {
+    return $post->ID;
+  }
+
+  // is the user allowed to edit the post or page?
+  if( ! current_user_can( 'edit_post', $post->ID )){
+    return $post->ID;
+  }
+  // ok, we're authenticated: we need to find and save the data
+  // we'll put it into an array to make it easier to loop though
+  $Guide_post_meta['_Guide_post_name'] = $_POST['Guide_post_name'];
+  $Guide_post_meta['_Guide_post_desc'] = $_POST['Guide_post_desc'];
+  $Guide_post_meta['_Guide_post_step1'] = $_POST['Guide_post_step1'];
+
+  //index value varibale must be declared outisde foreach and be -1 to start on 0 in loop
+  $i = -1;
+  foreach ($_POST['Guide_post_steps'] as $steps => $step) {
+    //increment the index each time
+    $i++;
+    if( get_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', FALSE ) ) { // if the custom field already has a value
+      if(filter_var($step, FILTER_SANITIZE_STRING).length == 0) { // delete if blank
+        delete_post_meta( $post->ID, '_Guide_post_steps_'.$i.'');
+      } else {
+        update_post_meta($post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING));
+      }
+    } else { // if the custom field doesn't have a value
+      add_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING) );
+    }
+
+  }
+
+  // add values as custom fields
+  foreach( $Guide_post_meta as $key => $value ) { // cycle through the $Guide_post_meta array
+    // if( $post->post_type == 'revision' ) return; // don't store custom data twice
+    $value = implode(',', (array)$value); // if $value is an array, make it a CSV (unlikely)
+    if( get_post_meta( $post->ID, $key, FALSE ) ) { // if the custom field already has a value
+      update_post_meta($post->ID, $key, $value);
+    } else { // if the custom field doesn't have a value
+      add_post_meta( $post->ID, $key, $value );
+    }
+    if( !$value ) { // delete if blank
+      delete_post_meta( $post->ID, $key );
+    }
+  }
+}
+add_action( 'save_post', 'Guide_post_save_meta', 1, 2 ); // save the custom fields
+
+
+
+// Filter for creating a template when editing guides
+add_filter( 'default_content', 'custom_editor_content' );
+function custom_editor_content( $content ) {
+  global $current_screen;
+  if ( 'post' === $current_screen -> post_type ) {
+    $content = '
+    <div class="content-col-main">
+    This is the guide introduction
+    &nbsp;
+    </div>
+    ';
+
+    return $content;
+  }
+}
+
+add_filter( 'mce_css', 'filter_mce_css' );
+
+function filter_mce_css( $mce_css ) {
+  global $current_screen;
+
+  if ( 'post' === $current_screen -> post_type )
+  $mce_css .= ', ' . plugins_url( 'editor-styles.css', __FILE__ );
+
+  return $mce_css;
+}
+
+function oto_mce_buttons_2($buttons) {
+  array_unshift($buttons, 'styleselect');
+  return $buttons;
+}
+
+add_filter('mce_buttons_2', 'oto_mce_buttons_2');
+
+function oto_mce_before_init_insert_formats( $init_array ) {
+
+  // Define the style_formats array
+  $style_formats = array(
+    // Each array child is a format with it's own settings
+    array(
+      'title' => 'Guide Step',
+      'block' => 'div',
+      'classes' => 'guide-step-block',
+      'wrapper' => true,
+    ),
+  );
+  // Insert the array, JSON ENCODED, into 'style_formats'
+  $init_array['style_formats'] = json_encode( $style_formats );
+
+  return $init_array;
+
+}
+// Attach callback to 'tiny_mce_before_init'
+add_filter( 'tiny_mce_before_init', 'oto_mce_before_init_insert_formats' );
 
 // Sidebar Menu configuration
 add_action('admin_menu', 'addEterMenu');
@@ -263,36 +552,36 @@ function eterLicences() {
   echo '<h1>License for WP-OTO</h1>';
   echo '<h3>Copyright 2015 uClass Developers Daniel Holm & Adam Jacobs Feldstein</h3>';
   echo'
-        <p>
-            Licensed under the Apache License, Version 2.0 (the "License");
-            you may not use this file except in compliance with the License.
-            You may obtain a copy of the License at
-        </p>
-        ';
+  <p>
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  </p>
+  ';
   echo'
-       <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
-       ';
+  <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
+  ';
   echo'
-        <p>
-            Unless required by applicable law or agreed to in writing, software
-            distributed under the License is distributed on an "AS IS" BASIS,
-            WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-            See the License for the specific language governing permissions and
-            limitations under the License.
-        </p>';
+  <p>
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  </p>';
   echo'
-        <h1>Licences for included software</h1>
-        <h3>jQuery</h3>
-        <p>Copyright 2010, John Resig</p>
-        <p>Dual licensed under the MIT or GPL Version 2 licenses.</p>
-        <a href="http://jquery.org/license">http://jquery.org/license</a>      
-    ';
+  <h1>Licences for included software</h1>
+  <h3>jQuery</h3>
+  <p>Copyright 2010, John Resig</p>
+  <p>Dual licensed under the MIT or GPL Version 2 licenses.</p>
+  <a href="http://jquery.org/license">http://jquery.org/license</a>
+  ';
   echo'
-    <h3>daneden Animate.css</h3>
-    <p>Animate.css is licensed under the MIT license. (<a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>)</p>
-    <p>Browse source on github: <href="https://github.com/daneden/animate.css">daneden/animate.css
-</a></p>
-    ';
+  <h3>daneden Animate.css</h3>
+  <p>Animate.css is licensed under the MIT license. (<a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>)</p>
+  <p>Browse source on github: <href="https://github.com/daneden/animate.css">daneden/animate.css
+  </a></p>
+  ';
   echo '</div>';
 
 }
