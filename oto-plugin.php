@@ -332,15 +332,25 @@ function Guide_metabox() {
   // Get the data if its already been entered
   $Guide_post_name = get_post_meta($post->ID, '_Guide_post_name', true);
   $Guide_post_desc = get_post_meta($post->ID, '_Guide_post_desc', true);
+
+  $meta = get_post_meta($post->ID);
+  $string = '_Guide_post_steps_';
+  $countGuidesExisting = 0;
+  ksort($meta);
+  foreach ($meta as $key => $data) {
+    if (substr_count($key, $string) !== 0) {
+      $countGuidesExisting++;
+    }
+  }
   ?>
   <script type="text/javascript">
   jQuery.noConflict();
   jQuery(document).ready(function($){
-    var max_fields      = 10; //maximum input boxes allowed
+    var max_fields      = 1000000; //maximum input boxes allowed
     var wrapper         = $("#guideEditArea"); //Fields wrapper
     var add_button      = $(".add_field_button"); //Add button ID
 
-    var i = 1; //initlal text box count
+    var i = <?php echo $countGuidesExisting ?>; //initlal text box count
     $(add_button).click(function(e){ //on add input button click
       e.preventDefault();
       if(i < max_fields){ //max input box allowed
@@ -376,10 +386,12 @@ function Guide_metabox() {
     </tr>
     <?php
     $meta = get_post_meta($post->ID);
-    //print_r($meta);
 
     $string = '_Guide_post_steps_';
     $count = 0;
+
+    ksort($meta);
+    //print_r($meta);
     foreach ($meta as $key => $data) {
       //print_r($data);
       //print_r($key);
@@ -474,7 +486,13 @@ function Guide_post_save_meta( $post_id, $post ) { // save the data
 }
 add_action( 'save_post', 'Guide_post_save_meta', 1, 2 ); // save the custom fields
 
-
+add_action( 'pre_get_posts', 'add_guide_to_query' ); // Inject the guides in to main query
+function add_guide_to_query( $query ) {
+  if ( is_home() && $query->is_main_query() )
+  //get the normal type and guides
+  $query->set( 'post_type', array( 'post', 'guide' ) );
+  return $query;
+}
 
 // Filter for creating a template when editing guides
 add_filter( 'default_content', 'custom_editor_content' );
@@ -534,13 +552,13 @@ add_filter( 'tiny_mce_before_init', 'oto_mce_before_init_insert_formats' );
 //Include a sigle-post template for guides to simplify for administrators
 /*add_filter('single_template', 'oto_guide_template');
 function oto_guide_template($single) {
-  global $wp_query, $post;
+global $wp_query, $post;
 
-  if ($post->post_type == "guide"){
-    if(file_exists(PLUGIN_PATH . '/single-guide.php'))
-    return PLUGIN_PATH . '/single-guide.php';
-  }
-  return $single;
+if ($post->post_type == "guide"){
+if(file_exists(PLUGIN_PATH . '/single-guide.php'))
+return PLUGIN_PATH . '/single-guide.php';
+}
+return $single;
 }*/
 
 // Sidebar Menu configuration
