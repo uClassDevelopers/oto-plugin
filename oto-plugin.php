@@ -144,8 +144,8 @@ add_action( 'wp_dashboard_setup', 'eter_add_dashboard_widgets' );
 function eter_dashboard_widget_function() {
 
   // Display whatever you want to tell.
-  echo"<p>Gå til OTO-appens inställningar</p>";
-  echo "<p>Det går att dölja innehåll från appen eller webbsidan. Detta görs genom att byta innehållsredigerarens läge från visuell till text, och sedan innefatta innehållen för repsektive plattform inom en lämplig utav dessa: </p><code>&lt;div class='app'&gt; Innehåll &lt/div&gt;  &lt;div class='webb'&gt; Innehåll &lt/div&gt; </code>. <p>'app' visas bara i appen och 'webb' visas bara på webben.</p>";
+  echo"<p>The wordpress OTO-plugin</p>";
+  echo "<p>Thank you for using the OTO-plugin. You can learn how to use the plugin here</p>";
 }
 
 // Add a column to the edit post list
@@ -158,7 +158,7 @@ add_filter( 'manage_edit-post_columns', 'add_new_columns');
 */
 
 function add_new_columns( $columns ) {
-  $column_meta = array( 'meta' => 'Om guide i kurs, position' );
+  $column_meta = array( 'meta' => 'Guide index in course' );
   $columns = array_slice( $columns, 0, 2, true ) + $column_meta + array_slice( $columns, 2, NULL, true );
   return $columns;
 }
@@ -183,27 +183,6 @@ function custom_columns( $column ) {
     echo $metaData;
     break;
   }
-}
-
-
-
-add_action( 'add_meta_boxes', 'cd_meta_box_add' );
-function cd_meta_box_add()
-{
-  add_meta_box( 'eter-meta', 'Om guide för kurs, ange position', 'cd_meta_box_cb', 'post', 'normal', 'high' );
-}
-
-function cd_meta_box_cb( $post )
-{
-  $values = get_post_custom( $post->ID );
-  $text = isset( $values['eter_guide_position'] ) ? esc_attr( $values['eter_guide_position'][0] ) : '';
-  wp_nonce_field( 'my_meta_box_nonce', 'meta_box_nonce' );
-  ?>
-  <p>
-    <label for="eter_guide_position">Position</label>
-    <input type="text" name="eter_guide_position" id="eter_guide-position" value="<?php echo $text; ?>" />
-  </p>
-  <?php
 }
 
 

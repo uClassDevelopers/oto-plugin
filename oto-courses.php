@@ -1,4 +1,4 @@
-)<?php
+<?php
 /*
 Copyright 2015 uClass Developers Daniel Holm & Adam Jacobs Feldstein
 
@@ -27,15 +27,13 @@ if(!empty($_POST)) {
   $guideSteps= count($_POST['_Guide_post_steps_']);
 
   for ($i = 0; $i < $guideSteps; $i++) {
-    //Split string to find the old post location to set the new
-    //print_r($_POST['_Guide_post_steps_'][$i]);
     $newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
     $guideId = intval(filter_var($newVals[0], FILTER_SANITIZE_NUMBER_INT));
     $oldPos = filter_var($newVals[1], FILTER_SANITIZE_STRING);
     $newPos = filter_var($newVals[2], FILTER_SANITIZE_STRING);
 
     $metaTable = $wpdb->prefix . 'postmeta';
-    if($oldPos == null || $oldPos == undefined) {
+    if($oldPos == null || $oldPos == undefined || $oldPos == NaN) {
       $rows_affected =  $wpdb->query( $wpdb->prepare( "
       INSERT INTO `$metaTable`
       SET `post_id` = %d, meta_key = %s, meta_value=%s", $guideId, 'eter_guide_position', $newPos
@@ -51,7 +49,8 @@ if(!empty($_POST)) {
     if("" == trim($_POST['ti_id'][$i])) {
       $rows_affected = $wpdb->query(
       $wpdb->prepare(
-      'INSERT INTO '. $table_name .' SET title = \''.$_POST['ti_title'][$i].'\', on_link = \''.$_POST['ti_url'][$i].'\', image_url = \''.$_POST['ti_image_url'][$i].'\', row = 3, course = \''.$_POST['course'][$i].'\', position = \''.$_POST['ti_position'][$i].'\', content = \''.$_POST['content'][$i].'\';'
+      'INSERT INTO '. $table_name .' SET title = \''.$_POST['ti_title'][$i].'\', on_link = \''.$_POST['ti_url'][$i].'\', image_url = \''.$_POST['ti_image_url'][$i].'\',
+       row = 3, course = \''.$_POST['course'][$i].'\', position = \''.$_POST['ti_position'][$i].'\', content = \''.$_POST['content'][$i].'\';'
       )
     ); // $wpdb->query, Else if the content is static set is_dyn to 0 and update fileds
   }
@@ -73,9 +72,6 @@ if($_POST['ti_row'][$i] == "3" and trim($_POST['ti_id'][$i] > 0) and trim($_POST
 }
 }
 }
-//$newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
-//print_r($newVals);
-//print_r($guideSteps);
 echo "<div class='notice success animated shake'>Settings Saved<span class='tgl-alert'>X</span></div>";
 }
 ?>
@@ -162,7 +158,6 @@ jQuery(document).ready(function($){
   });
   get_courses();
 
-
   $('#add_field').click(function(){
     count += 1;
     $('#top_images_container').append('<div id="new_'+ count +'" style="margin-bottom: 20px;"><div><p class="del-wth-chbx" style=""><input type="checkbox" name="ti_delete[]" value=""> RADERA</p><img height="120" style="vertical-align: middle; float: right; vertical-align: top; margin-bottom: 20px; margin-right: 20px;" src="" alt="Kunde inte ladda bilden"> </div> <div><h3 id="course-selector">Välj en kurs:<select name="course[]" class="course-selector"><option selected></option></select></h3><h3>Rubrik: <input type="text" name="ti_title[]" value="" /> | Position: <input type="text" name="ti_position[]" value=""></h3><p>Länk till bild: <input style="vertical-align: middle;" type="text" name="ti_image_url[]" value=""> | Länk på bild: <input type="text" name="ti_url[]" value=""></p><h3> Beskriving:</h3><textarea name="content[]" rows="5" cols="65"></textarea><input type="hidden" name="ti_id[]" value="" /><input type="hidden" name="id[]" value="" /><input type="hidden" name="ti_row[]" value="3"><hr/></div></div>                                   '
@@ -193,7 +188,7 @@ jQuery(document).ready(function($){
     <h1>| Courses</h1>
     <div style="margin-left: 2%;">
       <h2>Content for image carousel</h2>
-      <p>Note: Images will show up on this page only after save and reload. Courses is sub categories to the category Courses with id 43. Create a new course
+      <p>Note: Images will show up on this page only after save and reload. Courses is sub categories to the category Courses with id 43. Create a new course by creating a new sub category to parent 43
         <a href="edit-tags.php?taxonomy=category">here</a>.</p>
 
         <div style="text-align: center;">
