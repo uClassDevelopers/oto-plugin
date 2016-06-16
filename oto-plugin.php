@@ -12,7 +12,7 @@ function jquery_init(){
   wp_enqueue_script('jquery');
 }
 add_filter('wp_enqueue_scripts', 'jquery_init');
-
+/*
 require_once('/inc/js-wp-editor.php');
 
 function oto_scripts_n_styles() {
@@ -23,7 +23,7 @@ function oto_scripts_n_styles() {
   js_wp_editor();
 
   wp_enqueue_script( 'wpeditor-script' );
-}
+}*/
 
 add_action( 'wp_enqueue_scripts', 'oto_scripts_n_styles' );
 
