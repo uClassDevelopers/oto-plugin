@@ -76,7 +76,7 @@ if($_POST['ti_row'][$i] == "3" and trim($_POST['ti_id'][$i] > 0) and trim($_POST
 //$newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
 //print_r($newVals);
 //print_r($guideSteps);
-echo "<div class='notice success animated shake'> ".$fieldCount." st slides uppdaterades <span class='tgl-alert'>X</span></div>";
+echo "<div class='notice success animated shake'>Settings Saved<span class='tgl-alert'>X</span></div>";
 }
 ?>
 <!-- ETER-options.php jQuery scripts -->
