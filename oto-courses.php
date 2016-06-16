@@ -1,4 +1,4 @@
-<?php
+)<?php
 /*
 Copyright 2015 uClass Developers Daniel Holm & Adam Jacobs Feldstein
 
@@ -24,6 +24,26 @@ if(!empty($_POST)) {
   $fieldCount = count($_POST['id']);
   $fieldCountTI = count($_POST['ti_id']);
   $fieldCountRTI = count($_POST['ti_delete']);
+  $guideSteps= count($_POST['_Guide_post_steps_']);
+
+  for ($i = 0; $i < $guideSteps; $i++) {
+    //Split string to find the old post location to set the new
+    print_r($_POST['_Guide_post_steps_'][$i]);
+    $newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
+    $guideId = intval(filter_var($newVals[0], FILTER_SANITIZE_NUMBER_INT));
+    $oldPos = filter_var($newVals[1], FILTER_SANITIZE_STRING);
+    $newPos = filter_var($newVals[2], FILTER_SANITIZE_STRING);
+
+    $metaTable = $wpdb->prefix . 'postmeta';
+    if($oldPos == null || $oldPos == undefined) {
+      $rows_affected =  $wpdb->query( $wpdb->prepare( "
+      INSERT INTO `$metaTable`
+      SET `post_id` = %d, meta_key = %s, meta_value=%s", $guideId, 'eter_guide_position', $newPos
+      ) );
+    } else {
+      $updated = $wpdb->update( $metaTable, array('meta_value' => $newPos), array('post_id'=> $guideId, 'meta_key'=>'eter_guide_position'));
+    }
+  }
 
   //Loop through all top images
   for ($i = 0; $i < $fieldCountTI; $i++) {
@@ -53,6 +73,9 @@ if($_POST['ti_row'][$i] == "3" and trim($_POST['ti_id'][$i] > 0) and trim($_POST
 }
 }
 }
+$newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
+print_r($newVals);
+print_r($guideSteps);
 echo "<div class='notice success animated shake'> ".$fieldCount." st slides uppdaterades <span class='tgl-alert'>X</span></div>";
 }
 ?>
@@ -73,11 +96,41 @@ jQuery(document).ready(function($){
       dataType: 'json',
       success: function (data) {
         //alert("success");
-
+        var finaleArr = [];
         $.each(data.posts, function(index, element) {
-          $('#'+courseName).append('<li><span class="drag-handle">&#9776;</span>'+ element.custom_fields.eter_guide_position +' '+ element.title+'</li>');
+          var positionUnParsed = element.custom_fields.eter_guide_position;
+          var positionParsed = parseInt(positionUnParsed);
+          finaleArr.push({'title':element.title, 'position': positionParsed, 'guideid': element.id});
+        });
+        //console.log(finaleArr);
+        finaleArr.sort(function(va, vb){
+          var valA = new Date(va.position),
+          valB = new Date(vb.position);
+          // Compare the 2 dates
+          if(valA < valB) return -1;
+          if(valA > valB) return 1;
+          return 0;
+        });
+        //console.log(finaleArr);
+        $.each(finaleArr, function(index, element) {
+          $('#'+courseName).append('<li data-key="'+element.position+'" data-keys="'+element.title+'"  data-guideid="'+element.guideid+'"><input type="hidden" data-guideid="'+element.guideid+'" data-key="'+element.position+'" id="_Guide_post_steps_'+element.position+'"  name="_Guide_post_steps_[]" value=""><span class="drag-handle">&#9776;</span>'+ element.position +' '+ element.title+'</li>');
           var list = document.getElementById(courseName);
-          Sortable.create(list);
+          Sortable.create(list, {
+            onSort: function (e) {
+              var items = e.to.children;
+              var result = [];
+              for (var i = 0; i < items.length; i++) {
+                result.push({'old':$(items[i]).data('key'), 'new': i, 'title':$(items[i]).data('keys')});
+                console.log($(items[i]).find('input').data('key'));
+
+                for(var x = 0; x<result.length; x++) {
+                  $('#_Guide_post_steps_'+$(items[i]).data('key')).val($(items[i]).data('guideid')+'..'+$(items[i]).data('key')+'..'+(i+1));
+                }
+              }
+              console.log(result);
+              console.log(e.oldIndex + ' -> ' + e.newIndex);
+            }
+          })
         });
       }
     });

@@ -494,60 +494,50 @@ function add_guide_to_query( $query ) {
   return $query;
 }
 
-// Filter for creating a template when editing guides
-add_filter( 'default_content', 'custom_editor_content' );
-function custom_editor_content( $content ) {
-  global $current_screen;
-  if ( 'post' === $current_screen -> post_type ) {
-    $content = '
-    <div class="content-col-main">
-    This is the guide introduction
-    &nbsp;
-    </div>
-    ';
+//Construct the sigle guide template for wp site
+add_filter('the_content', 'guide_content_controller');
+function guide_content_controller($content)
+{
+  if (is_singular('guide') && in_the_loop()) {
+    $meta = get_post_meta(get_the_id());
 
-    return $content;
+    $string = '_Guide_post_steps_';
+    $count = 0;
+
+    ksort($meta);
+    //print_r($meta);
+    foreach ($meta as $key => $data) {
+      //print_r($data);
+      //print_r($key);
+
+      //Check to see if the guide introduction exist
+      if (substr_count($key, '_Guide_post_desc') !== 0 ) {
+        echo "
+        <div id='introduction'>
+        ";
+        echo $data[0];
+        echo "
+        </div>
+        ";
+      }
+      //Check to se if any of the keys contains _Guide_post_steps_, if not 0 display the content
+      if (substr_count($key, $string) !== 0 ) {
+        $count++;
+        echo "
+        <div id='step".$count."' class='guide'>
+        <h2>Steg ".$count."</h2>
+        ";
+        echo $data[0];
+        echo "
+        </div>
+
+        ";
+      }
+    }
   }
+
+  return $content;
 }
-
-add_filter( 'mce_css', 'filter_mce_css' );
-
-function filter_mce_css( $mce_css ) {
-  global $current_screen;
-
-  if ( 'post' === $current_screen -> post_type )
-  $mce_css .= ', ' . plugins_url( 'editor-styles.css', __FILE__ );
-
-  return $mce_css;
-}
-
-function oto_mce_buttons_2($buttons) {
-  array_unshift($buttons, 'styleselect');
-  return $buttons;
-}
-
-add_filter('mce_buttons_2', 'oto_mce_buttons_2');
-
-function oto_mce_before_init_insert_formats( $init_array ) {
-
-  // Define the style_formats array
-  $style_formats = array(
-    // Each array child is a format with it's own settings
-    array(
-      'title' => 'Guide Step',
-      'block' => 'div',
-      'classes' => 'guide-step-block',
-      'wrapper' => true,
-    ),
-  );
-  // Insert the array, JSON ENCODED, into 'style_formats'
-  $init_array['style_formats'] = json_encode( $style_formats );
-
-  return $init_array;
-
-}
-// Attach callback to 'tiny_mce_before_init'
-add_filter( 'tiny_mce_before_init', 'oto_mce_before_init_insert_formats' );
 
 //Include a sigle-post template for guides to simplify for administrators
 /*add_filter('single_template', 'oto_guide_template');
