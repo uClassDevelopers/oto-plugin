@@ -28,7 +28,7 @@ if(!empty($_POST)) {
 
   for ($i = 0; $i < $guideSteps; $i++) {
     //Split string to find the old post location to set the new
-    print_r($_POST['_Guide_post_steps_'][$i]);
+    //print_r($_POST['_Guide_post_steps_'][$i]);
     $newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
     $guideId = intval(filter_var($newVals[0], FILTER_SANITIZE_NUMBER_INT));
     $oldPos = filter_var($newVals[1], FILTER_SANITIZE_STRING);
@@ -73,9 +73,9 @@ if($_POST['ti_row'][$i] == "3" and trim($_POST['ti_id'][$i] > 0) and trim($_POST
 }
 }
 }
-$newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
-print_r($newVals);
-print_r($guideSteps);
+//$newVals = explode("..", $_POST['_Guide_post_steps_'][$i]);
+//print_r($newVals);
+//print_r($guideSteps);
 echo "<div class='notice success animated shake'> ".$fieldCount." st slides uppdaterades <span class='tgl-alert'>X</span></div>";
 }
 ?>
