@@ -27,6 +27,12 @@ function oto_scripts_n_styles() {
 
 add_action( 'wp_enqueue_scripts', 'oto_scripts_n_styles' );
 
+wp_register_style( 'animate_css',  plugins_url('oto-plugin/animate.min.css'));
+wp_enqueue_style( 'animate_css' );
+
+wp_register_style('uclass_framework', plugins_url('oto-plugin/uclass-framework.css'));
+wp_enqueue_style( 'uclass_framework');
+
 //For development
 define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true);
@@ -124,9 +130,6 @@ function oto_setup_db() {
 
 //Do the db setup after theme selection 'eter_courses_slider_install', 'eter_courses_slider_install_data'
 register_activation_hook( __FILE__, 'oto_setup_db');
-
-wp_register_style('uclass_framework', plugins_url('oto-plugin/uclass-framework.css'));
-wp_enqueue_style( 'uclass_framework');
 
 //Setup a widget on dashboard describing css display none classes
 function eter_add_dashboard_widgets() {

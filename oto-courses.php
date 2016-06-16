@@ -175,17 +175,20 @@ jQuery(document).ready(function($){
 </script>
 <!-- Wrap everything in a form tag to make it easier to post to the processing script -->
 <form action=""  method="post" id="ETERStartForm">
-  <div id="handle" style="margin-left: 30px;">
-    <h1>Courses and Associated Guides </h1>
-    <div class="guidesInCourseList">
-    </div>
-    <div style="clear: both"></div>
-  </div>
-
   <div id="form-wrapper">
     <a class="animated zoomInDown" id="made_by_uclass" href="http://uclass.se/">
-      Made by uClassDevs<img src="<?php bloginfo('stylesheet_directory');?>/uclass_logo.png" alt="uClass Logo"/>
+      Made by uClassDevs
+      <?php
+      echo '<img src="' . plugins_url( 'uclass_logo.png', __FILE__ ) . '" > ';
+      ?>
     </a>
+    <div id="handle" style="margin-left: 30px;">
+      <h1>Courses and Associated Guides </h1>
+      <div class="guidesInCourseList">
+      </div>
+      <div style="clear: both"></div>
+    </div>
+
     <h1>OTO Application Options</h1>
     <h1>| Courses</h1>
     <div style="margin-left: 2%;">
