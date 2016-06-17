@@ -12,21 +12,8 @@ function jquery_init(){
   wp_enqueue_script('jquery');
 }
 add_filter('wp_enqueue_scripts', 'jquery_init');
-/*
-require_once('/inc/js-wp-editor.php');
 
-function oto_scripts_n_styles() {
-  // Trying to register wp-editor script
-  wp_register_script( 'wpeditor-script', plugins_url( '/js/js-wp-editor.min.js', __FILE__ ) );
-
-  //load the wp editor script
-  js_wp_editor();
-
-  wp_enqueue_script( 'wpeditor-script' );
-}*/
-
-add_action( 'wp_enqueue_scripts', 'oto_scripts_n_styles' );
-
+//Load styles for OTO-plugin pages
 wp_register_style( 'animate_css',  plugins_url('oto-plugin/animate.min.css'));
 wp_enqueue_style( 'animate_css' );
 
@@ -148,44 +135,6 @@ function eter_dashboard_widget_function() {
   echo "<p>Thank you for using the OTO-plugin. You can learn how to use the plugin here</p>";
 }
 
-// Add a column to the edit post list
-add_filter( 'manage_edit-post_columns', 'add_new_columns');
-
-/**
-* Add new columns to the post table
-*
-* @param Array $columns - Current columns on the list post
-*/
-
-function add_new_columns( $columns ) {
-  $column_meta = array( 'meta' => 'Guide index in course' );
-  $columns = array_slice( $columns, 0, 2, true ) + $column_meta + array_slice( $columns, 2, NULL, true );
-  return $columns;
-}
-
-// Add action to the manage post column to display the data
-add_action( 'manage_posts_custom_column' , 'custom_columns' );
-
-/**
-* Display data in new columns
-*
-* @param  $column Current column
-*
-* @return Data for the column
-*/
-function custom_columns( $column ) {
-  global $post;
-
-  switch ( $column ) {
-    case 'meta':
-    $metaData = get_post_meta( $post->ID, 'eter_guide_position', true );
-
-    echo $metaData;
-    break;
-  }
-}
-
-
 add_action( 'save_post', 'cd_meta_box_save' );
 function cd_meta_box_save( $post_id )
 {
@@ -261,7 +210,7 @@ function Guide_create_post_type() {
     'supports' => array(
       'title',
       'thumbnail',
-      //'author',
+      'author',
       //'trackbacks',
       'custom-fields',
       //'comments',
@@ -437,21 +386,22 @@ function Guide_post_save_meta( $post_id, $post ) { // save the data
 
   //index value varibale must be declared outisde foreach and be -1 to start on 0 in loop
   $i = -1;
-  foreach ($_POST['Guide_post_steps'] as $steps => $step) {
-    //increment the index each time
-    $i++;
-    if( get_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', FALSE ) ) { // if the custom field already has a value
-      if(filter_var($step, FILTER_SANITIZE_STRING).length == 0) { // delete if blank
-        delete_post_meta( $post->ID, '_Guide_post_steps_'.$i.'');
-      } else {
-        update_post_meta($post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING));
+  if(! isset($_POST['Guide_post_steps'])){
+    foreach ($_POST['Guide_post_steps'] as $steps => $step) {
+      //increment the index each time
+      $i++;
+      if( get_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', FALSE ) ) { // if the custom field already has a value
+        if(filter_var($step, FILTER_SANITIZE_STRING).length == 0) { // delete if blank
+          delete_post_meta( $post->ID, '_Guide_post_steps_'.$i.'');
+        } else {
+          update_post_meta($post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING));
+        }
+      } else { // if the custom field doesn't have a value
+        add_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING) );
       }
-    } else { // if the custom field doesn't have a value
-      add_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING) );
+
     }
-
   }
-
   // add values as custom fields
   foreach( $Guide_post_meta as $key => $value ) { // cycle through the $Guide_post_meta array
     // if( $post->post_type == 'revision' ) return; // don't store custom data twice
@@ -521,19 +471,23 @@ function guide_content_controller($content)
   return $content;
 }
 
-//Include a sigle-post template for guides to simplify for administrators
-/*add_filter('single_template', 'oto_guide_template');
-function oto_guide_template($single) {
-global $wp_query, $post;
+// Add column with guide index to the post-type guides
+add_filter('manage_guide_posts_columns', 'ST4_columns_head_only_guides', 10);
+add_action('manage_guide_posts_custom_column', 'ST4_columns_content_only_guides', 10, 2);
 
-if ($post->post_type == "guide"){
-if(file_exists(PLUGIN_PATH . '/single-guide.php'))
-return PLUGIN_PATH . '/single-guide.php';
+// CREATE TWO FUNCTIONS TO HANDLE THE COLUMN
+function ST4_columns_head_only_guides($defaults) {
+  $defaults['guide_postitions_name'] = 'guide postition';
+  return $defaults;
 }
-return $single;
-}*/
+function ST4_columns_content_only_guides($column_name, $post_ID) {
+  if ($column_name == 'guide_postitions_name') {
+    $metaData = get_post_meta( $post_ID, 'eter_guide_position', true );
+    echo $metaData;
+  }
+}
 
-// Sidebar Menu configuration
+// Admin Sidebar Menu configuration
 add_action('admin_menu', 'addEterMenu');
 function addEterMenu() {
   add_menu_page('OTO-APP', 'OTO-APP', 0, 'eter-ios-mobile-options', 'eterMenu');
