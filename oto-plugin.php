@@ -445,6 +445,31 @@ function guide_content_controller($content)
       //Check to see if the guide introduction exist
       if (substr_count($key, '_Guide_post_desc') !== 0 ) {
         echo "
+        <style type='text/css'>
+        #guide-wrapper {
+          padding: 5px;
+          background-color: #F2F2F2;
+        }
+        #introduction {
+          background-color: #fff;
+          border-radius: 5px;
+          padding: 5px;
+          margin: 1%;
+          color: #000;
+        }
+        .guide-step {
+          background-color: #fff;
+          border-radius: 5px;
+          padding: 5px;
+          margin: 1%;
+          color: #000;
+          border-left: 5px solid #777;
+        }
+        .guide-step h2 {
+          font-size: 20px;
+        }
+        </style>
+        <div id='guide-wrapper'>
         <div id='introduction'>
         ";
         echo $data[0];
@@ -456,35 +481,33 @@ function guide_content_controller($content)
       if (substr_count($key, $string) !== 0 ) {
         $count++;
         echo "
-        <div id='step".$count."' class='guide'>
+        <div id='step".$count."' class='guide-step'>
         <h2>Steg ".$count."</h2>
         ";
         echo $data[0];
         echo "
         </div>
-
         ";
       }
     }
+    echo "</div>";
   }
 
   return $content;
 }
 
-// Add column with guide index to the post-type guides
-add_filter('manage_guide_posts_columns', 'ST4_columns_head_only_guides', 10);
-add_action('manage_guide_posts_custom_column', 'ST4_columns_content_only_guides', 10, 2);
-
-// CREATE TWO FUNCTIONS TO HANDLE THE COLUMN
-function ST4_columns_head_only_guides($defaults) {
-  $defaults['guide_postitions_name'] = 'guide postition';
-  return $defaults;
-}
-function ST4_columns_content_only_guides($column_name, $post_ID) {
-  if ($column_name == 'guide_postitions_name') {
-    $metaData = get_post_meta( $post_ID, 'eter_guide_position', true );
-    echo $metaData;
-  }
+//Make sure that guides share same archive pages with posts
+add_filter('pre_get_posts', 'query_post_type');
+function query_post_type($query) {
+  if(is_category() || is_tag()) {
+    $post_type = get_query_var('post_type');
+	if($post_type)
+	    $post_type = $post_type;
+	else
+	    $post_type = array('post','guide');
+    $query->set('post_type',$post_type);
+	return $query;
+    }
 }
 
 // Admin Sidebar Menu configuration
