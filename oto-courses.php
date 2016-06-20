@@ -88,7 +88,7 @@ jQuery(document).ready(function($){
     //alert(courseName);
     $.ajax({
       type: 'GET',
-      url: 'http://eter.rudbeck.info/category/'+courseName+'/?json=1&apikey=ErtYnDsKATCzmuf6',
+      url: 'http://eter.rudbeck.info/category/'+courseName+'/?json=1&custom_fields=eter_guide_position&apikey=ErtYnDsKATCzmuf6',
       dataType: 'json',
       success: function (data) {
         //alert("success");
