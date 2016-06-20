@@ -212,7 +212,7 @@ function Guide_create_post_type() {
       'thumbnail',
       'author',
       //'trackbacks',
-      'custom-fields',
+      //'custom-fields',
       //'comments',
       'revisions',
       //'page-attributes', // (menu order, hierarchical must be true to show Parent option)
@@ -286,9 +286,13 @@ function Guide_metabox() {
       e.preventDefault();
       if(i < max_fields){ //max input box allowed
         i++; //text box increment
-        $(wrapper).append('<tr><th><label>Steg '+i+'</label></th><td><textarea name="Guide_post_steps[]"></textarea></td><a href="#" class="remove_field">Remove</a></tr>'); //add input box
+        $(wrapper).append('<tr><th><label>Steg '+i+'</label></th><td><textarea class="mceEditor" name="Guide_post_steps[]"></textarea></td><a href="#" class="remove_field">Remove</a></tr>'); //add input box
 
-        jQuery('#aa').wp_editor(); // add wp editor to textbox
+        tinymce.init({
+          mode : "textareas",
+          editor_selector : "mceEditor",
+          editor_deselector : "mceNoEditor"
+        });
       }
     });
 
@@ -357,9 +361,7 @@ function Guide_metabox() {
   </table>
   <?php
 }
-
 function Guide_post_save_meta( $post_id, $post ) { // save the data
-
   /*
   * We need to verify this came from our screen and with proper authorization,
   * because the save_post action can be triggered at other times.
@@ -367,41 +369,27 @@ function Guide_post_save_meta( $post_id, $post ) { // save the data
   if ( ! isset( $_POST['Guide_post_noncename'] ) ) { // Check if our nonce is set.
     return;
   }
-
   // verify this came from the our screen and with proper authorization,
   // because save_post can be triggered at other times
   if( !wp_verify_nonce( $_POST['Guide_post_noncename'], plugin_basename(__FILE__) ) ) {
     return $post->ID;
   }
-
   // is the user allowed to edit the post or page?
   if( ! current_user_can( 'edit_post', $post->ID )){
     return $post->ID;
   }
+
   // ok, we're authenticated: we need to find and save the data
   // we'll put it into an array to make it easier to loop though
   $Guide_post_meta['_Guide_post_name'] = $_POST['Guide_post_name'];
   $Guide_post_meta['_Guide_post_desc'] = $_POST['Guide_post_desc'];
-  $Guide_post_meta['_Guide_post_step1'] = $_POST['Guide_post_step1'];
 
-  //index value varibale must be declared outisde foreach and be -1 to start on 0 in loop
   $i = -1;
-  if(! isset($_POST['Guide_post_steps'])){
-    foreach ($_POST['Guide_post_steps'] as $steps => $step) {
-      //increment the index each time
-      $i++;
-      if( get_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', FALSE ) ) { // if the custom field already has a value
-        if(filter_var($step, FILTER_SANITIZE_STRING).length == 0) { // delete if blank
-          delete_post_meta( $post->ID, '_Guide_post_steps_'.$i.'');
-        } else {
-          update_post_meta($post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING));
-        }
-      } else { // if the custom field doesn't have a value
-        add_post_meta( $post->ID, '_Guide_post_steps_'.$i.'', filter_var($step, FILTER_SANITIZE_STRING) );
-      }
-
-    }
+  foreach ($_POST['Guide_post_steps'] as $key => $step) {
+    $i++;
+    $Guide_post_meta['_Guide_post_steps_'.$i.''] = filter_var($step, FILTER_SANITIZE_STRING);
   }
+
   // add values as custom fields
   foreach( $Guide_post_meta as $key => $value ) { // cycle through the $Guide_post_meta array
     // if( $post->post_type == 'revision' ) return; // don't store custom data twice
@@ -415,6 +403,7 @@ function Guide_post_save_meta( $post_id, $post ) { // save the data
       delete_post_meta( $post->ID, $key );
     }
   }
+  return print_r($_POST['Guide_post_steps']);
 }
 add_action( 'save_post', 'Guide_post_save_meta', 1, 2 ); // save the custom fields
 
@@ -501,13 +490,13 @@ add_filter('pre_get_posts', 'query_post_type');
 function query_post_type($query) {
   if(is_category() || is_tag()) {
     $post_type = get_query_var('post_type');
-	if($post_type)
-	    $post_type = $post_type;
-	else
-	    $post_type = array('post','guide');
+    if($post_type)
+    $post_type = $post_type;
+    else
+    $post_type = array('post','guide');
     $query->set('post_type',$post_type);
-	return $query;
-    }
+    return $query;
+  }
 }
 
 // Admin Sidebar Menu configuration
